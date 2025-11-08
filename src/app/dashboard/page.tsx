@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Chatbot from "@/components/dashboard/Chatbot";
 import InsightCard from "@/components/dashboard/InsightCard";
+import MiniAnalytics from "@/components/dashboard/MiniAnalytics";
 import DataSourcesPanel from "@/components/dashboard/DataSourcesPanel";
 import AutomationsPanel from "@/components/dashboard/AutomationsPanel";
 import InsightsHistory from "@/components/dashboard/InsightsHistory";
@@ -62,7 +63,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
             >
               <InsightCard
                 title="Revenue"
@@ -83,6 +84,9 @@ export default function Dashboard() {
                 trendDirection="up"
               />
             </motion.div>
+
+            {/* Mini Analytics */}
+            <MiniAnalytics />
           </>
         );
       case "insights":

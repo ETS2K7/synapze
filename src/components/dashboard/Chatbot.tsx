@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
@@ -16,32 +16,34 @@ interface Source {
   url: string;
 }
 
-const mockMessages: Message[] = [
+const STORAGE_KEY = "synapze_chat_history";
+
+const defaultMessages: Message[] = [
   {
     id: "1",
     role: "user",
     content: "What are the key insights from last quarter?",
-    timestamp: "10:30 AM",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   },
   {
     id: "2",
     role: "ai",
     content:
       "Based on the data analysis, here are the key insights from Q4:\n\n1. Revenue increased by 12% compared to the previous quarter\n2. Customer churn rate decreased to 4%\n3. Net Promoter Score (NPS) improved to 8.4\n\nThese metrics indicate strong growth and customer satisfaction.",
-    timestamp: "10:30 AM",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   },
   {
     id: "3",
     role: "user",
     content: "Can you break down the revenue growth by region?",
-    timestamp: "10:32 AM",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   },
   {
     id: "4",
     role: "ai",
     content:
       "Revenue growth by region:\n\n• North America: +15%\n• Europe: +10%\n• Asia-Pacific: +8%\n• Latin America: +12%\n\nNorth America showed the strongest growth, driven primarily by enterprise sales.",
-    timestamp: "10:32 AM",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   },
 ];
 
@@ -63,16 +65,83 @@ const mockSources: Source[] = [
   },
 ];
 
+// Mock AI responses
+const getMockAIResponse = (userMessage: string): string => {
+  const lowerMessage = userMessage.toLowerCase();
+  if (lowerMessage.includes("revenue") || lowerMessage.includes("sales")) {
+    return "Revenue has shown strong growth this quarter, with a 12% increase compared to the previous period. Key drivers include enterprise sales and expansion in the APAC region.";
+  } else if (lowerMessage.includes("churn") || lowerMessage.includes("retention")) {
+    return "Customer churn has decreased to 4%, which is below our target threshold. This improvement is attributed to enhanced customer support and product updates.";
+  } else if (lowerMessage.includes("nps") || lowerMessage.includes("satisfaction")) {
+    return "Net Promoter Score (NPS) is currently at 8.4, indicating strong customer satisfaction. This represents a 0.8 point increase from the previous quarter.";
+  } else if (lowerMessage.includes("region") || lowerMessage.includes("geography")) {
+    return "Regional performance breakdown:\n\n• North America: +15% growth\n• Europe: +10% growth\n• Asia-Pacific: +8% growth\n• Latin America: +12% growth";
+  } else {
+    return "I've analyzed your question and found relevant insights. Based on the current data, I can provide detailed information on revenue trends, customer metrics, and regional performance. Would you like me to dive deeper into any specific area?";
+  }
+};
+
 export default function Chatbot() {
-  const [messages] = useState<Message[]>(mockMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedMessages = localStorage.getItem(STORAGE_KEY);
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages);
+          setMessages(parsed);
+        } catch (error) {
+          console.error("Error loading chat history:", error);
+          setMessages(defaultMessages);
+        }
+      } else {
+        setMessages(defaultMessages);
+      }
+    }
+  }, []);
+
+  // Save messages to localStorage whenever messages change
+  useEffect(() => {
+    if (typeof window !== "undefined" && messages.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
+
   const handleSend = () => {
     if (inputValue.trim()) {
-      // In a real app, this would send the message to an API
-      console.log("Sending:", inputValue);
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: "user",
+        content: inputValue.trim(),
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+
+      // Add user message
+      const newMessages = [...messages, userMessage];
+      setMessages(newMessages);
       setInputValue("");
+
+      // Simulate AI response after a short delay
+      setTimeout(() => {
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "ai",
+          content: getMockAIResponse(inputValue.trim()),
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        };
+        setMessages([...newMessages, aiResponse]);
+      }, 500);
+    }
+  };
+
+  const handleClearChat = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(STORAGE_KEY);
+      setMessages(defaultMessages);
     }
   };
 
@@ -94,12 +163,22 @@ export default function Chatbot() {
         {/* Header */}
         <div className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">Chatbot Console</h2>
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-700/50"
-          >
-            {isSidebarOpen ? "Hide" : "Show"} Sources
-          </button>
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleClearChat}
+              className="text-sm text-red-400 hover:text-red-300 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-700/50"
+            >
+              Clear Chat
+            </motion.button>
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-700/50"
+            >
+              {isSidebarOpen ? "Hide" : "Show"} Sources
+            </button>
+          </div>
         </div>
 
         {/* Main Content Area */}
