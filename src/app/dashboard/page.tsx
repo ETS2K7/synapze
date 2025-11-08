@@ -134,7 +134,7 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-950">
+    <main className="min-h-screen bg-white">
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}

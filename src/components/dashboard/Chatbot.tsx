@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 interface Message {
   id: string;
@@ -14,6 +15,13 @@ interface Source {
   id: string;
   title: string;
   url: string;
+}
+
+interface ChatAPIResponse {
+  response: string;
+  sources: string[];
+  confidence: number;
+  timestamp: string;
 }
 
 const STORAGE_KEY = "synapze_chat_history";
@@ -47,44 +55,13 @@ const defaultMessages: Message[] = [
   },
 ];
 
-const mockSources: Source[] = [
-  {
-    id: "1",
-    title: "Q4 Financial Report 2024",
-    url: "#",
-  },
-  {
-    id: "2",
-    title: "Customer Analytics Dashboard",
-    url: "#",
-  },
-  {
-    id: "3",
-    title: "Regional Sales Data",
-    url: "#",
-  },
-];
-
-// Mock AI responses
-const getMockAIResponse = (userMessage: string): string => {
-  const lowerMessage = userMessage.toLowerCase();
-  if (lowerMessage.includes("revenue") || lowerMessage.includes("sales")) {
-    return "Revenue has shown strong growth this quarter, with a 12% increase compared to the previous period. Key drivers include enterprise sales and expansion in the APAC region.";
-  } else if (lowerMessage.includes("churn") || lowerMessage.includes("retention")) {
-    return "Customer churn has decreased to 4%, which is below our target threshold. This improvement is attributed to enhanced customer support and product updates.";
-  } else if (lowerMessage.includes("nps") || lowerMessage.includes("satisfaction")) {
-    return "Net Promoter Score (NPS) is currently at 8.4, indicating strong customer satisfaction. This represents a 0.8 point increase from the previous quarter.";
-  } else if (lowerMessage.includes("region") || lowerMessage.includes("geography")) {
-    return "Regional performance breakdown:\n\n• North America: +15% growth\n• Europe: +10% growth\n• Asia-Pacific: +8% growth\n• Latin America: +12% growth";
-  } else {
-    return "I've analyzed your question and found relevant insights. Based on the current data, I can provide detailed information on revenue trends, customer metrics, and regional performance. Would you like me to dive deeper into any specific area?";
-  }
-};
 
 export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sources, setSources] = useState<Source[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -111,8 +88,8 @@ export default function Chatbot() {
     }
   }, [messages]);
 
-  const handleSend = () => {
-    if (inputValue.trim()) {
+  const handleSend = async () => {
+    if (inputValue.trim() && !isLoading) {
       const userMessage: Message = {
         id: Date.now().toString(),
         role: "user",
@@ -120,21 +97,75 @@ export default function Chatbot() {
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
-      // Add user message
+      // Add user message immediately
       const newMessages = [...messages, userMessage];
       setMessages(newMessages);
+      const currentInput = inputValue.trim();
       setInputValue("");
+      setIsLoading(true);
 
-      // Simulate AI response after a short delay
-      setTimeout(() => {
+      // Show loading toast
+      toast.loading("Connecting to Synapze backend...", { id: "chat-loading" });
+
+      try {
+        // Call API
+        const backendUrl =
+          process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000/api";
+        const response = await fetch(`${backendUrl}/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: currentInput,
+            context: messages
+              .filter((m) => m.role === "user")
+              .slice(-3)
+              .map((m) => m.content),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: ChatAPIResponse = await response.json();
+
+        // Update sources from API response
+        const newSources: Source[] = data.sources.map((source, index) => ({
+          id: (Date.now() + index).toString(),
+          title: source,
+          url: "#",
+        }));
+        setSources(newSources);
+
+        // Add AI response
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
           role: "ai",
-          content: getMockAIResponse(inputValue.trim()),
+          content: data.response,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages([...newMessages, aiResponse]);
-      }, 500);
+
+        // Show success toast
+        toast.success("Response received!", { id: "chat-loading" });
+      } catch (error) {
+        console.error("Chat API error:", error);
+        toast.error("Error: backend unreachable.", { id: "chat-loading" });
+
+        // Fallback: show error message in chat
+        const errorResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "ai",
+          content:
+            "I'm sorry, I'm having trouble connecting to the backend right now. Please try again in a moment.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        };
+        setMessages([...newMessages, errorResponse]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -158,23 +189,23 @@ export default function Chatbot() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden backdrop-blur-sm"
+        className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm"
       >
         {/* Header */}
-        <div className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Chatbot Console</h2>
+        <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between bg-gray-50">
+          <h2 className="text-xl font-semibold text-gray-900">Chatbot Console</h2>
           <div className="flex items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleClearChat}
-              className="text-sm text-red-400 hover:text-red-300 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-700/50"
+              className="text-sm text-red-500 hover:text-red-600 transition-colors px-3 py-1.5 rounded-md hover:bg-red-50"
             >
               Clear Chat
             </motion.button>
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-700/50"
+              className="text-sm text-purple-600 hover:text-purple-700 transition-colors px-3 py-1.5 rounded-md hover:bg-purple-50"
             >
               {isSidebarOpen ? "Hide" : "Show"} Sources
             </button>
@@ -199,19 +230,36 @@ export default function Chatbot() {
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-3 ${
                       message.role === "user"
-                        ? "bg-cyan-500/20 text-white border border-cyan-500/30"
-                        : "bg-gray-700/50 text-gray-100 border border-gray-600"
+                        ? "bg-purple-50 text-gray-900 border border-purple-200"
+                        : "bg-gray-50 text-gray-800 border border-gray-200"
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">
                       {message.content}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       {message.timestamp}
                     </p>
                   </div>
                 </motion.div>
               ))}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-gray-50 text-gray-800 border border-gray-200 rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-150"></div>
+                      <span className="text-xs text-gray-500 ml-2">Thinking...</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -223,23 +271,27 @@ export default function Chatbot() {
                 animate={{ width: 250, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="border-l border-gray-700 bg-gray-900/50 overflow-hidden"
+                className="border-l border-gray-200 bg-gray-50 overflow-hidden"
               >
                 <div className="p-4">
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
                     Sources / Citations
                   </h3>
                   <div className="space-y-2">
-                    {mockSources.map((source) => (
-                      <motion.a
-                        key={source.id}
-                        href={source.url}
-                        whileHover={{ x: 4 }}
-                        className="block p-2 rounded-md bg-gray-800/50 hover:bg-gray-700/50 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
-                      >
-                        {source.title}
-                      </motion.a>
-                    ))}
+                    {sources.length > 0 ? (
+                      sources.map((source) => (
+                        <motion.a
+                          key={source.id}
+                          href={source.url}
+                          whileHover={{ x: 4 }}
+                          className="block p-2 rounded-md bg-white hover:bg-purple-50 text-sm text-purple-600 hover:text-purple-700 border border-gray-200 hover:border-purple-200 transition-colors"
+                        >
+                          {source.title}
+                        </motion.a>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400">No sources yet</p>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -248,7 +300,7 @@ export default function Chatbot() {
         </div>
 
         {/* Input Bar */}
-        <div className="border-t border-gray-700 p-4">
+        <div className="border-t border-gray-200 p-4 bg-gray-50">
           <div className="flex gap-2">
             <input
               type="text"
@@ -256,16 +308,16 @@ export default function Chatbot() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask a question..."
-              className="flex-1 bg-gray-900/50 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+              className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-colors"
             />
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
-              disabled={!inputValue.trim()}
-              className="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+              disabled={!inputValue.trim() || isLoading}
+              className="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors shadow-sm"
             >
-              Send
+              {isLoading ? "Sending..." : "Send"}
             </motion.button>
           </div>
         </div>

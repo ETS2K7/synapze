@@ -55,8 +55,8 @@ const npsData = [
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-2 shadow-lg">
-        <p className="text-white text-sm">{`${payload[0].value}${payload[0].name === "value" ? "M" : payload[0].name === "users" ? "" : payload[0].name === "churn" ? "%" : ""}`}</p>
+      <div className="bg-white border border-gray-200 rounded-lg p-2 shadow-lg">
+        <p className="text-gray-900 text-sm">{`${payload[0].value}${payload[0].name === "value" ? "M" : payload[0].name === "users" ? "" : payload[0].name === "churn" ? "%" : ""}`}</p>
       </div>
     );
   }
@@ -71,29 +71,29 @@ export default function MiniAnalytics() {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="w-full"
     >
-      <h3 className="text-lg font-semibold text-white mb-6">Analytics Overview</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Analytics Overview</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Revenue Trend */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 backdrop-blur-sm"
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
         >
-          <h4 className="text-sm font-medium text-gray-400 mb-2">Revenue Trend</h4>
+          <h4 className="text-sm font-medium text-gray-500 mb-2">Revenue Trend</h4>
           <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#9333ea" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Area
+                  <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="#06b6d4"
+                  stroke="#9333ea"
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
                   strokeWidth={2}
@@ -110,13 +110,13 @@ export default function MiniAnalytics() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 backdrop-blur-sm"
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
         >
-          <h4 className="text-sm font-medium text-gray-400 mb-2">User Growth</h4>
+          <h4 className="text-sm font-medium text-gray-500 mb-2">User Growth</h4>
           <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={userGrowthData}>
-                <Bar dataKey="users" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="users" fill="#9333ea" radius={[4, 4, 0, 0]} />
                 <Tooltip content={<CustomTooltip />} />
               </BarChart>
             </ResponsiveContainer>
@@ -129,9 +129,9 @@ export default function MiniAnalytics() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 backdrop-blur-sm"
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
         >
-          <h4 className="text-sm font-medium text-gray-400 mb-2">Churn Trend</h4>
+          <h4 className="text-sm font-medium text-gray-500 mb-2">Churn Trend</h4>
           <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={churnData}>
@@ -154,22 +154,22 @@ export default function MiniAnalytics() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 backdrop-blur-sm"
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
         >
-          <h4 className="text-sm font-medium text-gray-400 mb-2">NPS Score</h4>
+          <h4 className="text-sm font-medium text-gray-500 mb-2">NPS Score</h4>
           <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={npsData}>
                 <defs>
                   <linearGradient id="colorNPS" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#9333ea" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <Area
                   type="monotone"
                   dataKey="score"
-                  stroke="#10b981"
+                  stroke="#9333ea"
                   fillOpacity={1}
                   fill="url(#colorNPS)"
                   strokeWidth={2}

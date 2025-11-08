@@ -82,36 +82,36 @@ export default function InsightsHistory() {
       transition={{ duration: 0.5 }}
       className="w-full max-w-6xl mx-auto"
     >
-      <div className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden backdrop-blur-sm">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         {/* Header */}
-        <div className="border-b border-gray-700 px-6 py-4">
-          <h2 className="text-xl font-semibold text-white">Insights History</h2>
-          <p className="text-sm text-gray-400 mt-1">
+        <div className="border-b border-gray-200 px-6 py-4 bg-gray-50">
+          <h2 className="text-xl font-semibold text-gray-900">Insights History</h2>
+          <p className="text-sm text-gray-500 mt-1">
             View past queries and AI-generated insights
           </p>
         </div>
 
         {/* Scrollable List */}
         <div className="max-h-[600px] overflow-y-auto">
-          <div className="divide-y divide-gray-700">
+          <div className="divide-y divide-gray-200">
             {mockInsights.map((insight, index) => (
               <motion.div
                 key={insight.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="p-6 hover:bg-gray-700/30 transition-colors"
+                className="p-6 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     {/* Query */}
                     <div className="flex items-start gap-3 mb-2">
-                      <span className="text-cyan-400 text-lg mt-0.5">💡</span>
+                      <span className="text-purple-600 text-lg mt-0.5">💡</span>
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-white mb-1">
+                        <h3 className="text-sm font-medium text-gray-900 mb-1">
                           {insight.query}
                         </h3>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-gray-600">
                           {insight.summary}
                         </p>
                       </div>
@@ -119,11 +119,11 @@ export default function InsightsHistory() {
 
                     {/* Timestamp */}
                     <div className="flex items-center gap-2 ml-8 mt-2">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-400">
                         {insight.date}
                       </span>
-                      <span className="text-xs text-gray-500">•</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-400">•</span>
+                      <span className="text-xs text-gray-400">
                         {insight.timestamp}
                       </span>
                     </div>
@@ -134,7 +134,7 @@ export default function InsightsHistory() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleViewDetails(insight.id)}
-                    className="px-4 py-2 text-sm bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/50 rounded-lg transition-colors whitespace-nowrap"
+                    className="px-4 py-2 text-sm bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-200 rounded-lg transition-colors whitespace-nowrap"
                   >
                     View Details
                   </motion.button>
@@ -145,8 +145,8 @@ export default function InsightsHistory() {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-700 px-6 py-4 bg-gray-900/30">
-          <p className="text-sm text-gray-400 text-center">
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+          <p className="text-sm text-gray-500 text-center">
             Showing {mockInsights.length} insights
           </p>
         </div>

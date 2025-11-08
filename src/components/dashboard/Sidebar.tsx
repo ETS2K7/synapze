@@ -38,7 +38,7 @@ export default function Sidebar({
       <motion.aside
         initial={{ x: -300 }}
         animate={{ x: 0 }}
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gray-900/95 border-r border-gray-700 z-30 transition-all duration-300 ${
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 z-30 transition-all duration-300 ${
           isCollapsed
             ? "w-16 -translate-x-full md:translate-x-0"
             : "w-64 translate-x-0"
@@ -47,7 +47,7 @@ export default function Sidebar({
         {/* Toggle Button */}
         <button
           onClick={onToggleCollapse}
-          className="absolute -right-3 top-4 w-6 h-6 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors z-10"
+          className="absolute -right-3 top-4 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors z-10 shadow-sm"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <span className="text-xs">
@@ -80,8 +80,8 @@ export default function Sidebar({
                     onClick={() => handleNavClick(item.id)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       isActive
-                        ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-lg shadow-cyan-500/20"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                        ? "bg-purple-50 text-purple-600 border border-purple-200 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>
@@ -103,8 +103,8 @@ export default function Sidebar({
                     onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       isActive
-                        ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-lg shadow-cyan-500/20"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                        ? "bg-purple-50 text-purple-600 border border-purple-200 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>
@@ -136,7 +136,7 @@ export default function Sidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggleCollapse}
-            className="fixed inset-0 bg-black/50 z-20 md:hidden"
+            className="fixed inset-0 bg-black/20 z-20 md:hidden"
           />
         )}
       </AnimatePresence>

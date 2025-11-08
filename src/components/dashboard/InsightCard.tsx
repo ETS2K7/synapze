@@ -23,14 +23,14 @@ export default function InsightCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-      className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur-sm hover:border-cyan-500/50 transition-colors"
+      className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:border-purple-300 hover:shadow-md transition-all"
     >
-      <h3 className="text-sm font-medium text-gray-400 mb-2">{title}</h3>
+      <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
       <div className="flex items-baseline justify-between">
-        <p className="text-3xl font-bold text-white">{value}</p>
+        <p className="text-3xl font-bold text-gray-900">{value}</p>
         <div
           className={`flex items-center gap-1 text-sm font-semibold ${
-            isPositive ? "text-cyan-400" : "text-red-400"
+            isPositive ? "text-purple-600" : "text-red-500"
           }`}
         >
           <span>{isPositive ? "↑" : "↓"}</span>

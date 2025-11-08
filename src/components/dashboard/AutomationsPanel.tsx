@@ -85,7 +85,7 @@ export default function AutomationsPanel() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "text-cyan-400";
+        return "text-purple-600";
       case "running":
         return "text-yellow-400";
       case "paused":
@@ -140,11 +140,11 @@ export default function AutomationsPanel() {
       transition={{ duration: 0.5 }}
       className="w-full max-w-6xl mx-auto"
     >
-      <div className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden backdrop-blur-sm">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         {/* Header */}
-        <div className="border-b border-gray-700 px-6 py-4">
-          <h2 className="text-xl font-semibold text-white">Automations</h2>
-          <p className="text-sm text-gray-400 mt-1">
+        <div className="border-b border-gray-200 px-6 py-4 bg-gray-50">
+          <h2 className="text-xl font-semibold text-gray-900">Automations</h2>
+          <p className="text-sm text-gray-500 mt-1">
             Manage your automated workflows and scheduled tasks
           </p>
         </div>
@@ -153,8 +153,8 @@ export default function AutomationsPanel() {
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700 bg-gray-900/50">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Automation
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -171,27 +171,27 @@ export default function AutomationsPanel() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-gray-200">
               {automations.map((automation, index) => (
                 <motion.tr
                   key={automation.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="hover:bg-gray-700/30 transition-colors"
+                  className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-white">
+                    <div className="text-sm font-medium text-gray-900">
                       {automation.name}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-300">
+                    <div className="text-sm text-gray-600">
                       {automation.description}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">
+                    <div className="text-sm text-gray-600">
                       {automation.schedule}
                     </div>
                   </td>
@@ -213,7 +213,7 @@ export default function AutomationsPanel() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleRunNow(automation.id)}
-                        className="px-3 py-1.5 text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/50 rounded-md transition-colors"
+                        className="px-3 py-1.5 text-xs bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-200 rounded-md transition-colors"
                       >
                         Run Now
                       </motion.button>
@@ -221,7 +221,7 @@ export default function AutomationsPanel() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleToggleStatus(automation.id)}
-                        className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600 rounded-md transition-colors"
+                        className="px-3 py-1.5 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 border border-gray-300 rounded-md transition-colors"
                       >
                         {automation.status === "active" ? "Pause" : "Activate"}
                       </motion.button>
@@ -234,17 +234,17 @@ export default function AutomationsPanel() {
         </div>
 
         {/* Mobile Card View */}
-        <div className="md:hidden divide-y divide-gray-700">
+        <div className="md:hidden divide-y divide-gray-200">
           {automations.map((automation, index) => (
             <motion.div
               key={automation.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="p-4 hover:bg-gray-700/30 transition-colors"
+              className="p-4 hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-sm font-medium text-white">
+                <h3 className="text-sm font-medium text-gray-900">
                   {automation.name}
                 </h3>
                 <div className="flex items-center gap-2">
@@ -258,11 +258,11 @@ export default function AutomationsPanel() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-300 mb-3">
+              <p className="text-sm text-gray-600 mb-3">
                 {automation.description}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-500">
                   {automation.schedule}
                 </span>
                 <div className="flex items-center gap-2">
@@ -289,11 +289,11 @@ export default function AutomationsPanel() {
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-gray-700 px-6 py-4 bg-gray-900/30">
+        <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors shadow-sm"
           >
             + Create Automation
           </motion.button>
