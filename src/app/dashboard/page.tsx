@@ -7,6 +7,8 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import Chatbot from "@/components/dashboard/Chatbot";
 import InsightCard from "@/components/dashboard/InsightCard";
 import DataSourcesPanel from "@/components/dashboard/DataSourcesPanel";
+import AutomationsPanel from "@/components/dashboard/AutomationsPanel";
+import InsightsHistory from "@/components/dashboard/InsightsHistory";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -83,6 +85,16 @@ export default function Dashboard() {
             </motion.div>
           </>
         );
+      case "insights":
+        return (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <InsightsHistory />
+          </motion.div>
+        );
       case "data-sources":
         return (
           <motion.div
@@ -99,9 +111,8 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center py-12"
           >
-            <p className="text-gray-400">Automations panel coming soon...</p>
+            <AutomationsPanel />
           </motion.div>
         );
       default:
